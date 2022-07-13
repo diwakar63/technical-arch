@@ -1,1 +1,24 @@
+name: app
+on:
+  push:
+    branches:
+      - main
 
+jobs:
+  application:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build sonarqube-exporter
+        run: docker build -t azurecontinerregistry.azurecr.io/tomcat-app:latest
+        
+      - name: Build sonarqube-exporter
+        run: docker build -t azurecontinerregistry.azurecr.io/tomcat-app:latest
+        
+      - name: Configure ssh private key
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}     
+        
+        .
