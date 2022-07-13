@@ -1,1 +1,51 @@
 name: infra
+on:
+  workflow_dispatch:
+    inputs:
+      terraform_action:
+        description: terraform plan or apply
+        type: choice
+        options:
+          - plan
+          - apply -auto-approve
+          - plan -destroy
+          - destroy -auto-approve
+       
+env:
+  ARM_SUBSCRIPTION_ID: "subscription_id"
+  ARM_TENANT_ID: ${{ secrets.tenant_id }}
+  ARM_CLIENT_ID: ${{ secrets.client_id }}
+  ARM_CLIENT_SECRET: ${{ secrets.client_secret }}
+  WORKING_DIRECTORY: assignmentone/terraform/
+
+jobs:
+  terraform_AKS:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_wrapper: true
+          terraform_version: 0.14.0 
+
+      - name: Terraform Init
+        run: terraform init      
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+      
+      - name: Terraform Action
+        run: terraform ${{ github.event.inputs.terraform_action }} 
+        env:
+          TF_VAR_subscription_id: ${{ env.ARM_SUBSCRIPTION_ID }}
+          TF_VAR_db_admin_password: ${{ secrets.db_admin_password }}
+        working-directory: ${{ env.WORKING_DIRECTORY }}           
