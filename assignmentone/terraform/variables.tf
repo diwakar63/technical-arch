@@ -1,4 +1,3 @@
-#AppName
 variable "application_name" {
   type        = string
   description = "Name of the application."
@@ -44,7 +43,6 @@ variable "lun" {
   type        = string
   description = "The Logical Unit Number of the Data Disk"
 }
-#Azure Platform Image // OS Image
 variable "img_publisher" {
   type        = string
   description = "Specifies the publisher of the image used to create the virtual machine"
@@ -77,8 +75,27 @@ variable "ssh_key" {
   type        = string
   description = "SSH key for the admin user."
 }
-#Tags
 variable "tags" {
   description = "A map of the tags to use for tagging resources that are deployed"
   type        = map(any)
+}
+variable "db_admin_login" {
+  type        = string
+  description = "The Administrator Login for the Database Server."
+}
+variable "db_admin_password" {
+  type        = string
+  description = "The Administrator Login Password."
+}
+variable "db_sku" {
+  type        = string
+  description = "Specifies the SKU Name for this Database Server."
+}
+variable "db_version" {
+  type        = string
+  description = "Specifies the version of Database to use."
+}
+variable "db_storage" {
+  type        = string
+  description = "Max storage allowed for a server."
 }
