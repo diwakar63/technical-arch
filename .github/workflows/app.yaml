@@ -3,22 +3,39 @@ on:
   push:
     branches:
       - main
-
+      
+env:
+  ACR_USERNAME: "username"   
+  
 jobs:
   application:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      
+      - name: login into ACR
+        uses: azure/docker-login@v1
+        with:
+          login-server: 'azurecontinerregistry.azurecr.io' 
+          username: ${{ env.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}     
 
-      - name: Build sonarqube-exporter
+      - name: Build app
         run: docker build -t azurecontinerregistry.azurecr.io/tomcat-app:latest
         
-      - name: Build sonarqube-exporter
-        run: docker build -t azurecontinerregistry.azurecr.io/tomcat-app:latest
+      - name: push to acr
+        run: docker push azurecontinerregistry.azurecr.io/tomcat-app:latest
         
       - name: Configure ssh private key
         uses: webfactory/ssh-agent@v0.5.4
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}     
-        
-        .
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          
+       
+      - name: pull image and run app in remote server
+        run: |
+          ssh user@ip
+          docker pull azurecontinerregistry.azurecr.io/tomcat-app:latest
+          docker run -itd -p 8080:8080 --name tomcatapp azurecontinerregistry.azurecr.io/tomcat-app:latest
+          
+          
